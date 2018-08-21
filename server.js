@@ -84,77 +84,74 @@ app.put("/posts/:id", (req, res) =>{
 				message: "Internal server error" }));
 		});
 
-app.delete("/posts/:id", (req, res) => {
-	BlogPost
-		.findByIdAndRemove(req.params.id)
-		.then(() => {
-			res.status(204).json({ message: 'success' });
-		})
-		.catch(err => {
-			console.error(err);
-			res.status(500).json({
-			message: "Internal server error"
+		app.delete("/posts/:id", (req, res) => {
+			BlogPost
+				.findByIdAndRemove(req.params.id)
+				.then(() => {
+					res.status(204).json({ message: 'success' });
+				})
+				.catch(err => {
+					console.error(err);
+					res.status(500).json({
+					message: "Internal server error"
+				});
 		});
-});
+	});
 
-app.delete("/:id", (req, res) => {
-	BlogPost
-		.findByIdAndRemove(req.params.id)
-		.then(() => {
-			console.log(`Deleted blog post with id \`${req.params.id}\``);
-			res.status(204).end();
+		
+		app.delete("/:id", (req, res) => {
+			BlogPost
+				.findByIdAndRemove(req.params.id)
+				.then(() => {
+					console.log(`Deleted blog post with id \`${req.params.id}\``);
+					res.status(204).end();
+				});
 		});
-});
-
-app.use("*", function (req, res) {
-	res.status(404).json({ message: "Not Found" });
-});
-
-
-let server;
-
-function runServer(databaseUrl, port = PORT) {
-  return new Promise((resolve, reject) => {
-    mongoose.connect(
-      databaseUrl,
-      err => {
-        if (err) {
-          return reject(err);
-        }
-        server = app
-          .listen(port, () => {
-            console.log(`Your app is listening on port ${port}`);
-            resolve();
-          })
-          .on("error", err => {
-            mongoose.disconnect();
-            reject(err);
-          });
-      }
-    );
-  });
-}
-
-function closeServer() {
-  return mongoose.disconnect().then(() => {
-    return new Promise((resolve, reject) => {
-      console.log("Closing server");
-      server.close(err => {
-        if (err) {
-          return reject(err);
-        }
-        resolve();
-      });
-    });
-  });
-}
-
-app.use("*", function(req, res) {
-  res.status(404).json({ message: "Not Found" });
-});
-
-if (require.main === module) {
-  runServer(DATABASE_URL).catch(err => console.error(err));
-}
-
-module.exports = { app, runServer, closeServer };
+		
+		app.use("*", function (req, res) {
+			res.status(404).json({ message: "Not Found" });
+		});
+		
+		let server;
+		
+		function runServer(databaseUrl, port = PORT) {
+			return new Promise((resolve, reject) => {
+				mongoose.connect(
+					databaseUrl,
+					err => {
+						if (err) {
+							return reject(err);
+						}
+						server = app
+							.listen(port, () => {
+								console.log(`Your app is listening on port ${port}`);
+								resolve();
+							})
+							.on("error", err => {
+								mongoose.disconnect();
+								reject(err);
+							});
+					}
+				);
+			});
+		}
+		
+		function closeServer() {
+			return mongoose.disconnect().then(() => {
+				return new Promise((resolve, reject) => {
+					console.log("Closing server");
+					server.close(err => {
+						if (err) {
+							return reject(err);
+						}
+						resolve();
+					});
+				});
+			});
+		}
+		
+		if (require.main === module) {
+			runServer(DATABASE_URL).catch(err => console.error(err));
+		}
+		
+		module.exports = { app, runServer, closeServer };
