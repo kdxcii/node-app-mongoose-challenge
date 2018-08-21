@@ -110,7 +110,9 @@ app.use('*', function (req, res) {
   res.status(404).json({ message: 'Not Found' });
 });
 
+
 let server;
+
 
 function runServer(databaseUrl, port = PORT) {
   return new Promise((resolve, reject) => {
