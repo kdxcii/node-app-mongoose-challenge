@@ -25,10 +25,10 @@ blogPostSchema.pre('find', function(next) {
   next();
 });
 
-blogPostSchema.pre('findOne', function(next) ) {
+blogPostSchema.pre('findOne', function(next) {
   this.populate('author');
   next();
-}
+});
 
 
 blogPostSchema.virtual('authorName').get(function() {
